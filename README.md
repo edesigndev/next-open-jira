@@ -16,7 +16,11 @@ MongoDB URL Local:
 mongodb://localhost:27017
 ```
 
-Comandos de despliegue del frontend
+## Configurar las variables de entorno
+
+Renombrar el archivo **.env.template** por **.env**
+
+## Comandos de despliegue del frontend
 
 ```bash
 npm run dev
