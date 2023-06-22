@@ -13,8 +13,6 @@ export default function handler(
       return getEntries(res);
     case 'POST':
       return createEntry(req, res);
-    case 'PUT':
-      return updateEntry(req, res);
     default:
       res.status(400).json({ message: 'Endpoint no existe' });
   }
