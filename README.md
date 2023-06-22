@@ -20,6 +20,14 @@ mongodb://localhost:27017
 
 Renombrar el archivo **.env.template** por **.env**
 
+## Llenar la base de datos con información de pruebas
+
+Llamar:
+
+```
+http://localhost:3000/api/seed
+```
+
 ## Comandos de despliegue del frontend
 
 ```bash
