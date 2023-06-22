@@ -1,5 +1,5 @@
+import React, { ChangeEvent, useMemo, useState } from 'react';
 import { Layout } from '@/components/layouts';
-import React from 'react';
 import {
   capitalize,
   Button,
@@ -23,13 +23,32 @@ import { EntryStatus } from '@/interfaces';
 const validStatus: EntryStatus[] = ['pending', 'in-progress', 'finished'];
 
 export const EntryPage = () => {
+  const [inputValue, setInputValue] = useState('');
+  const [status, setstatus] = useState<EntryStatus>('pending');
+  const [touched, setTouched] = useState(false);
+
+  const isNotValid = useMemo(
+    () => inputValue.length <= 0 && touched,
+    [inputValue, touched]
+  );
+
+  const onTextFieldChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setInputValue(event.target.value);
+  };
+
+  const statusChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setstatus(event.target.value as EntryStatus);
+  };
+
+  const onSave = () => {};
+
   return (
     <Layout title='.......'>
       <Grid container justifyContent='center' sx={{ marginTop: 2 }}>
         <Grid item xs={12} sm={8} md={6}>
           <Card>
             <CardHeader
-              title='Entrada:'
+              title={`Entrada: ${inputValue}`}
               subheader={`Creada hace: .... minutos`}
             ></CardHeader>
             <CardContent>
@@ -40,10 +59,15 @@ export const EntryPage = () => {
                 autoFocus
                 multiline
                 label='Nueva entrada'
+                value={inputValue}
+                onChange={onTextFieldChange}
+                helperText={isNotValid && 'Ingrese un valor'}
+                onBlur={() => setTouched(true)}
+                error={isNotValid}
               />
               <FormControl>
                 <FormLabel>Estado:</FormLabel>
-                <RadioGroup row>
+                <RadioGroup row value={status} onChange={statusChange}>
                   {validStatus.map((option) => (
                     <FormControlLabel
                       key={option}
@@ -60,6 +84,8 @@ export const EntryPage = () => {
                 startIcon={<SaveOutlinedIcon />}
                 variant='contained'
                 fullWidth
+                onClick={onSave}
+                disabled={inputValue.length <= 0}
               >
                 Save
               </Button>
