@@ -8,8 +8,10 @@ const entrySchema = new Schema({
   createdAt: { type: Number },
   status: {
     type: String,
-    enum: ['pending', 'in-progress', 'finished'],
-    default: 'pending',
+    enum: {
+      values: ['pending', 'in-progress', 'finished'],
+      default: 'pending',
+    },
     message: '{VALUE} no es un estado válido',
   },
 });
