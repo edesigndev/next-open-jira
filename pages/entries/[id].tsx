@@ -1,4 +1,6 @@
-import React, { ChangeEvent, useMemo, useState } from 'react';
+import React, { ChangeEvent, FC, useMemo, useState, useContext } from 'react';
+import { GetServerSideProps } from 'next';
+
 import { Layout } from '@/components/layouts';
 import {
   capitalize,
@@ -16,15 +18,23 @@ import {
   TextField,
   IconButton,
 } from '@mui/material';
+import { dateFunction } from '@/utils';
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
-import { EntryStatus } from '@/interfaces';
+import { Entry, EntryStatus } from '@/interfaces';
+import { dbEntries } from '@/database';
+import { EntriesContext } from '@/context/entries';
+
+interface Props {
+  entry: Entry;
+}
 
 const validStatus: EntryStatus[] = ['pending', 'in-progress', 'finished'];
 
-export const EntryPage = () => {
-  const [inputValue, setInputValue] = useState('');
-  const [status, setstatus] = useState<EntryStatus>('pending');
+export const EntryPage: FC<Props> = ({ entry }) => {
+  const { updateEntry } = useContext(EntriesContext);
+  const [inputValue, setInputValue] = useState(entry.description);
+  const [status, setstatus] = useState<EntryStatus>(entry.status);
   const [touched, setTouched] = useState(false);
 
   const isNotValid = useMemo(
@@ -40,16 +50,27 @@ export const EntryPage = () => {
     setstatus(event.target.value as EntryStatus);
   };
 
-  const onSave = () => {};
+  const onSave = () => {
+    if (inputValue.length <= 0) return;
+
+    const updatedEntry: Entry = {
+      ...entry,
+      description: inputValue,
+      status,
+    };
+    updateEntry(updatedEntry, true);
+  };
 
   return (
-    <Layout title='.......'>
+    <Layout title={inputValue.substring(0, 20) + '...' || ''}>
       <Grid container justifyContent='center' sx={{ marginTop: 2 }}>
         <Grid item xs={12} sm={8} md={6}>
           <Card>
             <CardHeader
-              title={`Entrada: ${inputValue}`}
-              subheader={`Creada hace: .... minutos`}
+              title={'Entrada:'}
+              subheader={`Creada ${dateFunction.getFormatDistanceToNow(
+                entry.createdAt
+              )} `}
             ></CardHeader>
             <CardContent>
               <TextField
@@ -105,6 +126,27 @@ export const EntryPage = () => {
       </IconButton>
     </Layout>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+  const { id } = params as { id: string };
+
+  const entry = await dbEntries.getEntryById(id);
+
+  if (!entry) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {
+      entry,
+    },
+  };
 };
 
 export default EntryPage;

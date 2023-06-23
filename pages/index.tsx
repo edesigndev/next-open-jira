@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, Grid } from '@mui/material';
+import { Card, CardHeader, Grid } from '@mui/material';
 import { Layout } from '@/components/layouts';
 import { Inter } from 'next/font/google';
 import { EntryList, NewEntry } from '@/components/ui';
